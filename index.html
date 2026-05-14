@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inter 2025/26 · Le 5 fasi tattiche di Chivu</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#FAFAF7;--fg:#1a1a1a;--fg2:#555;--fg3:#999;--border:rgba(0,0,0,0.12);--c1:#185FA5;--c2:#BA7517;--c3:#1D9E75;--c4:#A32D2D;--c5:#6B4FA0;--c1-bg:rgba(24,95,165,0.06);--c2-bg:rgba(186,117,23,0.08);--c3-bg:rgba(29,158,117,0.06);--c4-bg:rgba(163,45,45,0.08);--c5-bg:rgba(107,79,160,0.07);--c1-d:#042C53;--c2-d:#412402;--c3-d:#04342C;--c4-d:#501313;--c5-d:#2D1B4E;--c1-l:#0C447C;--c2-l:#854F0B;--c3-l:#0F6E56;--c4-l:#791F1F;--c5-l:#4A3578;--win:#0F6E56;--draw:#BA7517;--loss:#A32D2D}
+  *{box-sizing:border-box;margin:0}body{font-family:'DM Mono',monospace;background:var(--bg);color:var(--fg);padding:28px 24px;max-width:1200px;margin:0 auto}
+  h1{font-family:'Fraunces',serif;font-size:26px;font-weight:500;letter-spacing:-0.5px}h2{font-family:'Fraunces',serif;font-size:18px;font-weight:500;margin:44px 0 6px}
+  .sub{font-size:12px;color:var(--fg2);margin-bottom:18px;line-height:1.6}.meta{font-size:11px;color:var(--fg3);margin-bottom:16px}
+  .legend{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:10px;font-size:11px}.legend span{display:flex;align-items:center;gap:5px}.swatch{width:14px;height:3px;border-radius:1px}
+  .toggle-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center}.tbtn{color:white;border:none;padding:4px 10px;border-radius:4px;cursor:pointer;font:500 11px 'DM Mono',monospace}
+  .chart-box{position:relative;width:100%;height:460px;background:white;padding:4px;border-radius:6px;border:0.5px solid var(--border)}
+  .phase-cards{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:16px}.pc{border-radius:0;padding:10px 11px}.pc-l{font-size:10px;font-weight:500;margin-bottom:2px}.pc-n{font-size:11px;font-weight:500}.pc-d{font-size:10px;margin-top:2px}
+  .record-cards{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:10px}.rc{background:white;border:0.5px solid var(--border);border-radius:6px;padding:12px}.rc-phase{font-size:10px;font-weight:500;margin-bottom:6px}.rc-record{display:flex;gap:6px;font-size:18px;font-weight:500;margin-bottom:6px}.rc-detail{font-size:11px;color:var(--fg2)}.rc-sub{font-size:10px;color:var(--fg3);margin-top:2px}
+  .dl-btn{background:white;color:var(--fg);border:0.5px solid rgba(0,0,0,0.25);padding:6px 14px;border-radius:6px;cursor:pointer;font:500 11px 'DM Mono',monospace}.dl-btn:hover{background:#f0f0ea}
+  .ri-card{background:white;border:0.5px solid var(--border);border-radius:6px;padding:14px}.ri-hdr{display:flex;align-items:center;gap:7px;margin-bottom:8px;font-size:11px;font-weight:500}.ri-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}.ri-wrap{position:relative;height:240px}
+  @media(max-width:700px){.phase-cards,.record-cards{grid-template-columns:repeat(2,1fr)}.radar-grid-5{grid-template-columns:repeat(2,1fr)!important}}
+</style>
+</head>
+<body>
+<h1>Inter 2025/26 · Le 5 fasi tattiche di Chivu</h1>
+<div class="sub">Segmentazione temporale via PCA + PELT change point detection · stagione completa · scudetto + Coppa Italia 🏆🏆</div>
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
+  <div class="meta">52 partite · Serie A + Champions + Coppa Italia + Supercoppa · 26/08/25 → 13/05/26</div>
+  <button onclick="downloadChart()" class="dl-btn">⬇ Scarica PNG</button>
+</div>
+<div class="legend">
+  <span><span class="swatch" style="background:var(--c1)"></span><b>PC1</b> Dominio territoriale</span>
+  <span><span class="swatch" style="background:var(--c2)"></span><b>PC2</b> Aggressività duelli</span>
+  <span><span class="swatch" style="background:var(--c3)"></span><b>PC3</b> Verticalità diretta</span>
+  <span><span class="swatch" style="background:var(--c4)"></span><b>PC4</b> Pericolosità offensiva</span>
+</div>
+<div class="toggle-row">
+  <button onclick="tgl(0)" id="b0" class="tbtn" style="background:var(--c1)">PC1 on</button>
+  <button onclick="tgl(1)" id="b1" class="tbtn" style="background:var(--c2)">PC2 on</button>
+  <button onclick="tgl(2)" id="b2" class="tbtn" style="background:var(--c3)">PC3 on</button>
+  <button onclick="tgl(3)" id="b3" class="tbtn" style="background:var(--c4)">PC4 on</button>
+  <span style="color:var(--fg3);font-size:10px;">clicca per isolare · punti neri = partite emblematiche</span>
+</div>
+<div class="chart-box"><canvas id="pcChart"></canvas></div>
+<div class="phase-cards">
+  <div class="pc" style="background:var(--c1-bg);border-left:3px solid var(--c1)"><div class="pc-l" style="color:var(--c1-l)">FASE 1 · 15 partite</div><div class="pc-n" style="color:var(--c1-d)">Inter territoriale</div><div class="pc-d" style="color:var(--c1-l)">26/08 → 09/11/25</div></div>
+  <div class="pc" style="background:var(--c2-bg);border-left:3px solid var(--c2)"><div class="pc-l" style="color:var(--c2-l)">FASE 2 · 10 partite</div><div class="pc-n" style="color:var(--c2-d)">Crisi di compattezza</div><div class="pc-d" style="color:var(--c2-l)">23/11/25 → 04/01/26</div></div>
+  <div class="pc" style="background:var(--c3-bg);border-left:3px solid var(--c3)"><div class="pc-l" style="color:var(--c3-l)">FASE 3 · 15 partite</div><div class="pc-n" style="color:var(--c3-d)">Ritorno aggressivo</div><div class="pc-d" style="color:var(--c3-l)">07/01 → 28/02/26</div></div>
+  <div class="pc" style="background:var(--c4-bg);border-left:3px solid var(--c4)"><div class="pc-l" style="color:var(--c4-l)">FASE 4 · 5 partite</div><div class="pc-n" style="color:var(--c4-d)">Collasso di pressione</div><div class="pc-d" style="color:var(--c4-l)">03/03 → 05/04/26</div></div>
+  <div class="pc" style="background:var(--c5-bg);border-left:3px solid var(--c5)"><div class="pc-l" style="color:var(--c5-l)">FASE 5 · 7 partite</div><div class="pc-n" style="color:var(--c5-d)">Crociera da doblete</div><div class="pc-d" style="color:var(--c5-l)">12/04 → 13/05/26</div></div>
+</div>
+<h2>Bilancio sportivo per fase</h2>
+<div class="sub">Vittorie, pareggi e sconfitte in tutte le competizioni</div>
+<div class="record-cards">
+  <div class="rc"><div class="rc-phase" style="color:var(--c1-l)">FASE 1</div><div class="rc-record"><span style="color:var(--win)">12V</span><span style="color:var(--fg3)">0P</span><span style="color:var(--loss)">3S</span></div><div class="rc-detail">37 fatti · 13 subiti</div><div class="rc-sub">diff +24 · 2,47 gol/p</div></div>
+  <div class="rc"><div class="rc-phase" style="color:var(--c2-l)">FASE 2</div><div class="rc-record"><span style="color:var(--win)">6V</span><span style="color:var(--fg3)">1P</span><span style="color:var(--loss)">3S</span></div><div class="rc-detail">19 fatti · 8 subiti</div><div class="rc-sub">diff +11 · 1,90 gol/p</div></div>
+  <div class="rc"><div class="rc-phase" style="color:var(--c3-l)">FASE 3</div><div class="rc-record"><span style="color:var(--win)">11V</span><span style="color:var(--fg3)">1P</span><span style="color:var(--loss)">3S</span></div><div class="rc-detail">33 fatti · 15 subiti</div><div class="rc-sub">diff +18 · 2,20 gol/p</div></div>
+  <div class="rc"><div class="rc-phase" style="color:var(--c4-l)">FASE 4</div><div class="rc-record"><span style="color:var(--win)">2V</span><span style="color:var(--fg3)">2P</span><span style="color:var(--loss)">1S</span></div><div class="rc-detail">8 fatti · 6 subiti</div><div class="rc-sub">diff +2 · 1,60 gol/p</div></div>
+  <div class="rc"><div class="rc-phase" style="color:var(--c5-l)">FASE 5</div><div class="rc-record"><span style="color:var(--win)">6V</span><span style="color:var(--fg3)">1P</span><span style="color:var(--loss)">0S</span></div><div class="rc-detail">19 fatti · 7 subiti</div><div class="rc-sub">diff +12 · 2,71 gol/p</div></div>
+</div>
+<!-- RADAR -->
+<h2>Firma tattica delle 5 fasi</h2>
+<div class="sub">Radar su 10 metriche chiave · scala 0–100 dove 50 = media stagionale · clicca i bottoni per isolare le fasi</div>
+<div style="background:white;border:0.5px solid var(--border);border-radius:6px;padding:16px;position:relative;margin-bottom:16px;">
+  <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center;">
+    <button onclick="tglR(0)" id="rb0" class="tbtn" style="background:var(--c1)">F1 on</button>
+    <button onclick="tglR(1)" id="rb1" class="tbtn" style="background:var(--c2)">F2 on</button>
+    <button onclick="tglR(2)" id="rb2" class="tbtn" style="background:var(--c3)">F3 on</button>
+    <button onclick="tglR(3)" id="rb3" class="tbtn" style="background:var(--c4)">F4 on</button>
+    <button onclick="tglR(4)" id="rb4" class="tbtn" style="background:var(--c5)">F5 on</button>
+  </div>
+  <div style="position:relative;width:100%;height:400px;"><canvas id="radarAll"></canvas></div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;" class="radar-grid-5">
+  <div class="ri-card"><div class="ri-hdr"><div class="ri-dot" style="background:var(--c1)"></div><span style="color:var(--c1-d)">Fase 1 · Inter territoriale</span></div><div class="ri-wrap"><canvas id="r1"></canvas></div></div>
+  <div class="ri-card"><div class="ri-hdr"><div class="ri-dot" style="background:var(--c2)"></div><span style="color:var(--c2-d)">Fase 2 · Crisi di compattezza</span></div><div class="ri-wrap"><canvas id="r2"></canvas></div></div>
+  <div class="ri-card"><div class="ri-hdr"><div class="ri-dot" style="background:var(--c3)"></div><span style="color:var(--c3-d)">Fase 3 · Ritorno aggressivo</span></div><div class="ri-wrap"><canvas id="r3"></canvas></div></div>
+  <div class="ri-card"><div class="ri-hdr"><div class="ri-dot" style="background:var(--c4)"></div><span style="color:var(--c4-d)">Fase 4 · Collasso di pressione</span></div><div class="ri-wrap"><canvas id="r4"></canvas></div></div>
+  <div class="ri-card"><div class="ri-hdr"><div class="ri-dot" style="background:var(--c5)"></div><span style="color:var(--c5-d)">Fase 5 · Crociera da doblete</span></div><div class="ri-wrap"><canvas id="r5"></canvas></div></div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const D=[
+{d:'26/08/25',p1:0.89,p2:-1.33,p3:2.64,p4:0.03,ph:1,opp:'Torino'},
+{d:'31/08/25',p1:1.79,p2:-2.02,p3:1.73,p4:-0.94,ph:1,opp:'Udinese'},
+{d:'13/09/25',p1:0.63,p2:-1.21,p3:2.00,p4:-1.97,ph:1,opp:'Juventus'},
+{d:'17/09/25',p1:1.18,p2:-0.58,p3:1.39,p4:-0.99,ph:1,opp:'Ajax'},
+{d:'21/09/25',p1:0.43,p2:0.44,p3:2.14,p4:0.32,ph:1,opp:'Sassuolo'},
+{d:'27/09/25',p1:2.65,p2:-0.07,p3:2.28,p4:1.04,ph:1,opp:'Cagliari'},
+{d:'30/09/25',p1:3.96,p2:-1.20,p3:2.51,p4:1.46,ph:1,opp:'Slavia Praha'},
+{d:'04/10/25',p1:1.17,p2:0.08,p3:1.66,p4:0.63,ph:1,opp:'Cremonese'},
+{d:'18/10/25',p1:0.68,p2:1.72,p3:0.39,p4:1.22,ph:1,opp:'Roma'},
+{d:'21/10/25',p1:-1.47,p2:1.49,p3:0.48,p4:0.01,ph:1,opp:'USG'},
+{d:'25/10/25',p1:2.26,p2:1.17,p3:1.47,p4:0.28,ph:1,opp:'Napoli'},
+{d:'29/10/25',p1:2.40,p2:0.42,p3:1.83,p4:-2.68,ph:1,opp:'Fiorentina'},
+{d:'02/11/25',p1:3.13,p2:2.77,p3:1.52,p4:-1.86,ph:1,opp:'Verona'},
+{d:'05/11/25',p1:0.79,p2:0.95,p3:1.41,p4:-1.99,ph:1,opp:'Kairat'},
+{d:'09/11/25',p1:1.13,p2:-0.05,p3:0.67,p4:-1.21,ph:1,opp:'Lazio'},
+{d:'23/11/25',p1:-0.28,p2:-0.76,p3:-0.56,p4:-1.57,ph:2,opp:'Milan'},
+{d:'26/11/25',p1:0.43,p2:-0.33,p3:-1.33,p4:-1.68,ph:2,opp:'Atletico'},
+{d:'30/11/25',p1:-0.55,p2:0.84,p3:-1.01,p4:0.25,ph:2,opp:'Pisa'},
+{d:'03/12/25',p1:-2.07,p2:0.13,p3:0.62,p4:1.17,ph:2,opp:'Venezia'},
+{d:'06/12/25',p1:-3.84,p2:0.09,p3:-0.03,p4:0.98,ph:2,opp:'Como'},
+{d:'09/12/25',p1:-4.32,p2:0.00,p3:0.15,p4:-0.45,ph:2,opp:'Liverpool'},
+{d:'14/12/25',p1:-2.78,p2:-1.64,p3:0.57,p4:-0.89,ph:2,opp:'Genoa'},
+{d:'19/12/25',p1:-1.19,p2:-1.15,p3:1.15,p4:-0.54,ph:2,opp:'Bologna'},
+{d:'28/12/25',p1:-1.41,p2:-0.87,p3:2.48,p4:0.63,ph:2,opp:'Atalanta'},
+{d:'04/01/26',p1:0.88,p2:0.60,p3:0.32,p4:0.35,ph:2,opp:'Bologna'},
+{d:'07/01/26',p1:0.91,p2:0.84,p3:0.01,p4:0.18,ph:3,opp:'Parma'},
+{d:'11/01/26',p1:2.09,p2:1.05,p3:-1.24,p4:-1.76,ph:3,opp:'Napoli'},
+{d:'14/01/26',p1:-0.31,p2:1.17,p3:-0.66,p4:-1.52,ph:3,opp:'Lecce'},
+{d:'17/01/26',p1:-1.10,p2:2.04,p3:-0.27,p4:-1.71,ph:3,opp:'Udinese'},
+{d:'20/01/26',p1:1.25,p2:2.25,p3:0.29,p4:0.76,ph:3,opp:'Arsenal'},
+{d:'23/01/26',p1:0.45,p2:4.02,p3:-0.29,p4:1.00,ph:3,opp:'Pisa'},
+{d:'28/01/26',p1:2.28,p2:2.86,p3:-0.75,p4:1.36,ph:3,opp:'Dortmund'},
+{d:'01/02/26',p1:-1.45,p2:0.94,p3:-2.16,p4:0.74,ph:3,opp:'Cremonese'},
+{d:'04/02/26',p1:0.90,p2:-1.35,p3:-1.94,p4:0.95,ph:3,opp:'Torino'},
+{d:'08/02/26',p1:0.82,p2:-1.73,p3:-2.12,p4:1.66,ph:3,opp:'Sassuolo'},
+{d:'14/02/26',p1:1.04,p2:-0.91,p3:-1.81,p4:0.89,ph:3,opp:'Juventus'},
+{d:'18/02/26',p1:1.09,p2:1.27,p3:-1.06,p4:0.18,ph:3,opp:'Bodoe'},
+{d:'21/02/26',p1:3.05,p2:2.46,p3:-0.22,p4:-1.14,ph:3,opp:'Lecce'},
+{d:'24/02/26',p1:3.34,p2:2.92,p3:-0.87,p4:-0.83,ph:3,opp:'Bodoe'},
+{d:'28/02/26',p1:-0.36,p2:0.53,p3:-0.13,p4:-0.63,ph:3,opp:'Genoa'},
+{d:'03/03/26',p1:-2.75,p2:-1.53,p3:-1.36,p4:-0.25,ph:4,opp:'Como'},
+{d:'08/03/26',p1:-3.08,p2:-1.35,p3:-1.79,p4:-0.10,ph:4,opp:'Milan'},
+{d:'14/03/26',p1:-1.19,p2:-0.14,p3:-1.86,p4:-1.23,ph:4,opp:'Atalanta'},
+{d:'22/03/26',p1:-2.27,p2:2.21,p3:-0.76,p4:-0.27,ph:4,opp:'Fiorentina'},
+{d:'05/04/26',p1:-5.29,p2:2.08,p3:0.78,p4:-0.30,ph:4,opp:'Roma'},
+{d:'12/04/26',p1:-3.86,p2:0.50,p3:-0.39,p4:1.37,ph:5,opp:'Como'},
+{d:'17/04/26',p1:-1.72,p2:-1.12,p3:-2.24,p4:1.87,ph:5,opp:'Cagliari'},
+{d:'21/04/26',p1:1.38,p2:-2.72,p3:-3.20,p4:1.41,ph:5,opp:'Como'},
+{d:'26/04/26',p1:2.15,p2:-3.32,p3:-3.15,p4:0.56,ph:5,opp:'Torino'},
+{d:'03/05/26',p1:-0.31,p2:-3.34,p3:-1.76,p4:0.69,ph:5,opp:'Parma'},
+{d:'09/05/26',p1:-0.76,p2:-4.40,p3:0.29,p4:1.40,ph:5,opp:'Lazio'},
+{d:'13/05/26',p1:-3.03,p2:-3.92,p3:1.27,p4:2.44,ph:5,opp:'Lazio'}
+];
+const R={'26/08/25':'5-0','31/08/25':'1-2','13/09/25':'3-4','17/09/25':'2-0','21/09/25':'2-1','27/09/25':'2-0','30/09/25':'3-0','04/10/25':'4-1','18/10/25':'1-0','21/10/25':'4-0','25/10/25':'1-3','29/10/25':'3-0','02/11/25':'2-1','05/11/25':'2-1','09/11/25':'2-0','23/11/25':'0-1','26/11/25':'1-2','30/11/25':'2-0','03/12/25':'5-1','06/12/25':'4-0','09/12/25':'0-1','14/12/25':'2-1','19/12/25':'1-1','28/12/25':'1-0','04/01/26':'3-1','07/01/26':'2-0','11/01/26':'2-2','14/01/26':'1-0','17/01/26':'1-0','20/01/26':'1-3','23/01/26':'6-2','28/01/26':'2-0','01/02/26':'2-0','04/02/26':'2-1','08/02/26':'5-0','14/02/26':'3-2','18/02/26':'1-3','21/02/26':'2-0','24/02/26':'1-2','28/02/26':'2-0','03/03/26':'0-0','08/03/26':'0-1','14/03/26':'1-1','22/03/26':'1-1','05/04/26':'5-2','12/04/26':'4-3','17/04/26':'3-0','21/04/26':'3-2','26/04/26':'2-2','03/05/26':'2-0','09/05/26':'3-0','13/05/26':'2-0'};
+const KM=[
+  {i:2,l:'Juventus',d:'13/09/25',s:'3-4',pc:'p1',oy:-36,a:'center'},
+  {i:10,l:'Napoli',d:'25/10/25',s:'1-3',pc:'p2',oy:28,a:'center'},
+  {i:15,l:'Milan',d:'23/11/25',s:'0-1',pc:'p1',oy:-36,a:'center'},
+  {i:20,l:'Liverpool',d:'09/12/25',s:'0-1',pc:'p1',oy:28,a:'center'},
+  {i:29,l:'Arsenal',d:'20/01/26',s:'1-3',pc:'p2',oy:-36,a:'center'},
+  {i:31,l:'Dortmund',d:'28/01/26',s:'2-0',pc:'p2',oy:-36,a:'center'},
+  {i:35,l:'Juventus',d:'14/02/26',s:'3-2',pc:'p4',oy:-36,a:'center'},
+  {i:41,l:'Milan',d:'08/03/26',s:'0-1',pc:'p1',oy:-36,a:'center'},
+  {i:44,l:'Roma',d:'05/04/26',s:'5-2',pc:'p1',oy:16,a:'center'},
+  {i:51,l:'Lazio 🏆🏆',d:'13/05/26',s:'2-0',pc:'p4',oy:-36,a:'right'}
+];
+const lbl=D.map(d=>d.d);
+const pCol=['#185FA5','#BA7517','#1D9E75','#A32D2D'];
+const phC={1:'rgba(24,95,165,0.06)',2:'rgba(186,117,23,0.08)',3:'rgba(29,158,117,0.06)',4:'rgba(163,45,45,0.08)',5:'rgba(107,79,160,0.07)'};
+const phLC={1:'#185FA5',2:'#854F0B',3:'#0F6E56',4:'#791F1F',5:'#4A3578'};
+const phN={1:'Fase 1',2:'Fase 2',3:'Fase 3',4:'Fase 4',5:'Fase 5'};
+function rc(s){const p=s.replace(/\s*\(.+/,'').split('-').map(Number);return p[0]>p[1]?'#0F6E56':p[0]<p[1]?'#A32D2D':'#BA7517';}
+const bgPlugin={id:'bg',beforeDraw(ch){const{ctx,chartArea:{top,bottom,right},scales:{x}}=ch;let s=0;for(let i=1;i<=D.length;i++){if(i===D.length||D[i].ph!==D[s].ph){const x0=x.getPixelForValue(s),x1=i===D.length?right:(x.getPixelForValue(i)+x.getPixelForValue(i-1))/2;ctx.fillStyle=phC[D[s].ph];ctx.fillRect(x0,top,x1-x0,bottom-top);ctx.fillStyle=phLC[D[s].ph];ctx.font='500 10px DM Mono,monospace';ctx.textAlign='center';ctx.globalAlpha=.8;ctx.fillText(phN[D[s].ph],(x0+x1)/2,top+13);ctx.globalAlpha=1;if(i<D.length){ctx.strokeStyle='rgba(120,120,120,.3)';ctx.setLineDash([3,3]);ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x1,top);ctx.lineTo(x1,bottom);ctx.stroke();ctx.setLineDash([]);}s=i;}}const y0=ch.scales.y.getPixelForValue(0);ctx.strokeStyle='rgba(120,120,120,.25)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(ch.chartArea.left,y0);ctx.lineTo(right,y0);ctx.stroke();}};
+const annPlugin={id:'ann',afterDatasetsDraw(ch){const{ctx,scales:{x,y}}=ch;KM.forEach(km=>{const d=D[km.i],xP=x.getPixelForValue(km.i),yP=y.getPixelForValue(d[km.pc]);ctx.fillStyle='#1a1a1a';ctx.beginPath();ctx.arc(xP,yP,4,0,Math.PI*2);ctx.fill();ctx.strokeStyle='white';ctx.lineWidth=1.5;ctx.stroke();const[gf,ga]=km.s.split('-').map(Number);const oc=gf>ga?'#0F6E56':gf<ga?'#A32D2D':'#BA7517';const lY=yP+km.oy;ctx.font='500 10px DM Mono';ctx.textBaseline='middle';const w=Math.max(ctx.measureText(km.l).width,ctx.measureText(km.s).width,ctx.measureText(km.d).width)+14;const h=38;let bx=km.a==='center'?xP-w/2:km.a==='right'?xP-w+6:xP-6;ctx.strokeStyle='rgba(40,40,40,.35)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(xP,yP);ctx.lineTo(xP,lY-(km.oy<0?-h/2:h/2));ctx.stroke();ctx.fillStyle='rgba(255,255,255,.96)';ctx.strokeStyle='rgba(40,40,40,.4)';ctx.lineWidth=.5;ctx.fillRect(bx,lY-h/2,w,h);ctx.strokeRect(bx,lY-h/2,w,h);ctx.textAlign='center';const cx=bx+w/2;ctx.fillStyle='#1a1a1a';ctx.font='500 10px DM Mono';ctx.fillText(km.l,cx,lY-10);ctx.fillStyle=oc;ctx.font='500 11px DM Mono';ctx.fillText(km.s,cx,lY+2);ctx.fillStyle='#999';ctx.font='400 9px DM Mono';ctx.fillText(km.d,cx,lY+13);});}};
+const chart=new Chart(document.getElementById('pcChart'),{type:'line',data:{labels:lbl,datasets:[
+{label:'PC1',data:D.map(d=>d.p1),borderColor:pCol[0],borderWidth:2.2,tension:.35,pointRadius:0,pointHoverRadius:5},
+{label:'PC2',data:D.map(d=>d.p2),borderColor:pCol[1],borderWidth:2.2,tension:.35,pointRadius:0,pointHoverRadius:5},
+{label:'PC3',data:D.map(d=>d.p3),borderColor:pCol[2],borderWidth:2.2,tension:.35,pointRadius:0,pointHoverRadius:5},
+{label:'PC4',data:D.map(d=>d.p4),borderColor:pCol[3],borderWidth:2.2,tension:.35,pointRadius:0,pointHoverRadius:5}
+]},options:{responsive:true,maintainAspectRatio:false,animation:false,interaction:{mode:'index',intersect:false},layout:{padding:{top:22,right:44,bottom:5,left:5}},plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(30,30,30,.92)',padding:10,titleFont:{size:11,family:'DM Mono'},bodyFont:{size:11,family:'DM Mono'},callbacks:{title:i=>{const d=D[i[0].dataIndex];const r=R[d.d]||'';return d.d+' · vs '+d.opp+(r?' · '+r:'')+' · F'+d.ph;},label:i=>i.dataset.label+': '+i.parsed.y.toFixed(2)}}},scales:{x:{ticks:{autoSkip:true,maxTicksLimit:12,font:{size:9,family:'DM Mono'},color:'rgba(120,120,120,.7)'},grid:{display:false},border:{color:'rgba(120,120,120,.25)'}},y:{title:{display:true,text:'z-score (media mobile 3 partite)',font:{size:10,family:'DM Mono'},color:'rgba(120,120,120,.8)'},ticks:{font:{size:9,family:'DM Mono'},color:'rgba(120,120,120,.7)'},grid:{color:'rgba(120,120,120,.07)'},border:{color:'rgba(120,120,120,.25)'}}}},plugins:[bgPlugin,annPlugin]});
+const pN=['PC1','PC2','PC3','PC4'];
+function tgl(i){const ds=chart.data.datasets[i];ds.hidden=!ds.hidden;const b=document.getElementById('b'+i);if(ds.hidden){b.style.background='transparent';b.style.color=pCol[i];b.style.border='1px solid '+pCol[i];b.textContent=pN[i]+' off';}else{b.style.background=pCol[i];b.style.color='white';b.style.border='none';b.textContent=pN[i]+' on';}chart.update();}
+function downloadChart(){const c=document.getElementById('pcChart'),t=document.createElement('canvas');t.width=c.width;t.height=c.height;const x=t.getContext('2d');x.fillStyle='white';x.fillRect(0,0,t.width,t.height);x.drawImage(c,0,0);const a=document.createElement('a');a.download='inter_5fasi_2025_26_finale.png';a.href=t.toDataURL('image/png');a.click();}
+// RADAR
+const rLbl=['Alt. difensiva','Possesso %','Tocchi area','xG','Grandi occ.','Ingr. ult. terzo','Contrasti','Duelli vinti %','Lanci lunghi','Pall. recup.'];
+const rV={1:[51.2,52.4,52.6,54.6,57.3,49.7,49.4,55.0,60.8,48.5],2:[42.5,43.4,44.9,44.5,52.5,46.8,47.1,48.7,46.7,53.4],3:[55.6,55.2,55.5,52.5,46.9,55.5,56.5,51.1,45.4,56.8],4:[40.0,46.7,43.8,41.0,41.7,39.3,50.4,51.7,55.7,48.8],5:[53.4,45.4,44.4,45.0,43.6,51.1,41.1,37.7,37.3,34.5]};
+const rAbs={1:[42.25,60.0,35.67,2.21,5.0,55.13,14.87,54.0,50.93,44.67],2:[39.61,55.6,29.5,1.57,4.2,52.6,14.1,51.7,40.6,46.8],3:[43.57,61.4,38.0,2.07,3.27,60.4,17.2,52.6,39.67,48.27],4:[38.88,57.2,28.6,1.35,2.4,45.8,15.2,52.8,47.2,44.8],5:[42.93,56.57,29.14,1.6,2.71,56.43,12.14,47.71,33.71,38.57]};
+const rCol={1:'#185FA5',2:'#BA7517',3:'#1D9E75',4:'#A32D2D',5:'#6B4FA0'};
+const rFill={1:'rgba(24,95,165,.15)',2:'rgba(186,117,23,.18)',3:'rgba(29,158,117,.15)',4:'rgba(163,45,45,.18)',5:'rgba(107,79,160,.15)'};
+function rOpts(single){return{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(30,30,30,.92)',padding:8,bodyFont:{size:10,family:'DM Mono'},callbacks:{title:i=>rLbl[i[0].dataIndex],label:i=>{const p=i.dataset.phId;return'F'+p+': '+rAbs[p][i.dataIndex].toFixed(2);}}}},scales:{r:{min:single?0:20,max:single?100:75,ticks:{display:false,stepSize:single?25:10},pointLabels:{font:{size:single?8:10,family:'DM Mono'},color:'rgba(60,60,60,.85)'},grid:{color:'rgba(120,120,120,.15)'},angleLines:{color:'rgba(120,120,120,.12)'}}}};}
+const radarComp=new Chart(document.getElementById('radarAll'),{type:'radar',data:{labels:rLbl,datasets:[1,2,3,4,5].map(p=>({label:'Fase '+p,data:rV[p],borderColor:rCol[p],backgroundColor:'transparent',borderWidth:2,pointRadius:3,pointBackgroundColor:rCol[p],pointBorderColor:'white',pointBorderWidth:1.5,phId:p}))},options:rOpts(false)});
+const rCols=['#185FA5','#BA7517','#1D9E75','#A32D2D','#6B4FA0'];
+function tglR(i){const ds=radarComp.data.datasets[i];ds.hidden=!ds.hidden;const b=document.getElementById('rb'+i);if(ds.hidden){b.style.background='transparent';b.style.color=rCols[i];b.style.border='1px solid '+rCols[i];b.textContent='F'+(i+1)+' off';}else{b.style.background=rCols[i];b.style.color='white';b.style.border='none';b.textContent='F'+(i+1)+' on';}radarComp.update();}
+[1,2,3,4,5].forEach(p=>{new Chart(document.getElementById('r'+p),{type:'radar',data:{labels:rLbl,datasets:[{label:'Media',data:Array(10).fill(50),borderColor:'rgba(120,120,120,.4)',backgroundColor:'rgba(120,120,120,.04)',borderWidth:1,borderDash:[4,3],pointRadius:0,phId:p},{label:'Fase '+p,data:rV[p],borderColor:rCol[p],backgroundColor:rFill[p],borderWidth:2,pointRadius:2.5,pointBackgroundColor:rCol[p],pointBorderColor:'white',pointBorderWidth:1,phId:p}]},options:rOpts(true)});});
+</script>
+</body>
+</html>
