@@ -12,18 +12,30 @@
   .sub{font-size:12px;color:var(--fg2);margin-bottom:18px;line-height:1.6}.meta{font-size:11px;color:var(--fg3);margin-bottom:16px}
   .legend{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:10px;font-size:11px}.legend span{display:flex;align-items:center;gap:5px}.swatch{width:14px;height:3px;border-radius:1px}
   .toggle-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center}.tbtn{color:white;border:none;padding:4px 10px;border-radius:4px;cursor:pointer;font:500 11px 'DM Mono',monospace}
+  .top-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px}.hint{color:var(--fg3);font-size:10px}.chart-scroll{width:100%}
   .chart-box{position:relative;width:100%;height:460px;background:white;padding:4px;border-radius:6px;border:0.5px solid var(--border)}
   .phase-cards{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:16px}.pc{border-radius:0;padding:10px 11px}.pc-l{font-size:10px;font-weight:500;margin-bottom:2px}.pc-n{font-size:11px;font-weight:500}.pc-d{font-size:10px;margin-top:2px}
   .record-cards{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:10px}.rc{background:white;border:0.5px solid var(--border);border-radius:6px;padding:12px}.rc-phase{font-size:10px;font-weight:500;margin-bottom:6px}.rc-record{display:flex;gap:6px;font-size:18px;font-weight:500;margin-bottom:6px}.rc-detail{font-size:11px;color:var(--fg2)}.rc-sub{font-size:10px;color:var(--fg3);margin-top:2px}
   .dl-btn{background:white;color:var(--fg);border:0.5px solid rgba(0,0,0,0.25);padding:6px 14px;border-radius:6px;cursor:pointer;font:500 11px 'DM Mono',monospace}.dl-btn:hover{background:#f0f0ea}
   .ri-card{background:white;border:0.5px solid var(--border);border-radius:6px;padding:14px}.ri-hdr{display:flex;align-items:center;gap:7px;margin-bottom:8px;font-size:11px;font-weight:500}.ri-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}.ri-wrap{position:relative;height:240px}
-  @media(max-width:700px){.phase-cards,.record-cards{grid-template-columns:repeat(2,1fr)}.radar-grid-5{grid-template-columns:repeat(2,1fr)!important}}
+  .radar-panel{background:white;border:0.5px solid var(--border);border-radius:6px;padding:16px;position:relative;margin-bottom:16px}.radar-actions{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}.radar-chart{position:relative;width:100%;height:400px}.radar-grid-5{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  @media(max-width:900px){.phase-cards,.record-cards{grid-template-columns:repeat(3,1fr)}.radar-grid-5{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:700px){
+    body{padding:18px 14px;max-width:none}
+    h1{font-size:24px;line-height:1.1;letter-spacing:0}h2{margin-top:34px}
+    .sub{font-size:11px;margin-bottom:14px}.meta{width:100%;margin-bottom:4px;line-height:1.5}.top-row{align-items:flex-start}
+    .dl-btn{width:100%;padding:8px 12px}.legend{display:grid;grid-template-columns:1fr;gap:8px;font-size:10px}.toggle-row{gap:6px}.hint{flex-basis:100%;line-height:1.45}
+    .chart-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}.chart-box{width:860px;height:420px}
+    .phase-cards,.record-cards{grid-template-columns:1fr;gap:8px}.pc,.rc{padding:12px}.rc-record{font-size:17px}
+    .radar-panel{padding:12px;overflow-x:auto;-webkit-overflow-scrolling:touch}.radar-chart{width:560px;height:340px}.radar-grid-5{grid-template-columns:1fr;gap:8px}.ri-wrap{height:280px}
+  }
+  @media(max-width:380px){h1{font-size:22px}.tbtn{padding:5px 8px;font-size:10px}.ri-wrap{height:250px}}
 </style>
 </head>
 <body>
 <h1>Inter 2025/26 · Le 5 fasi tattiche di Chivu</h1>
 <div class="sub">Segmentazione temporale via PCA + PELT change point detection · stagione completa · scudetto + Coppa Italia 🏆🏆</div>
-<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
+<div class="top-row">
   <div class="meta">52 partite · Serie A + Champions + Coppa Italia + Supercoppa · 26/08/25 → 13/05/26</div>
   <button onclick="downloadChart()" class="dl-btn">⬇ Scarica PNG</button>
 </div>
@@ -38,9 +50,9 @@
   <button onclick="tgl(1)" id="b1" class="tbtn" style="background:var(--c2)">PC2 on</button>
   <button onclick="tgl(2)" id="b2" class="tbtn" style="background:var(--c3)">PC3 on</button>
   <button onclick="tgl(3)" id="b3" class="tbtn" style="background:var(--c4)">PC4 on</button>
-  <span style="color:var(--fg3);font-size:10px;">clicca per isolare · punti neri = partite emblematiche</span>
+  <span class="hint">clicca per isolare · punti neri = partite emblematiche</span>
 </div>
-<div class="chart-box"><canvas id="pcChart"></canvas></div>
+<div class="chart-scroll"><div class="chart-box"><canvas id="pcChart"></canvas></div></div>
 <div class="phase-cards">
   <div class="pc" style="background:var(--c1-bg);border-left:3px solid var(--c1)"><div class="pc-l" style="color:var(--c1-l)">FASE 1 · 15 partite</div><div class="pc-n" style="color:var(--c1-d)">Inter territoriale</div><div class="pc-d" style="color:var(--c1-l)">26/08 → 09/11/25</div></div>
   <div class="pc" style="background:var(--c2-bg);border-left:3px solid var(--c2)"><div class="pc-l" style="color:var(--c2-l)">FASE 2 · 10 partite</div><div class="pc-n" style="color:var(--c2-d)">Crisi di compattezza</div><div class="pc-d" style="color:var(--c2-l)">23/11/25 → 04/01/26</div></div>
@@ -60,17 +72,17 @@
 <!-- RADAR -->
 <h2>Firma tattica delle 5 fasi</h2>
 <div class="sub">Radar su 10 metriche chiave · scala 0–100 dove 50 = media stagionale · clicca i bottoni per isolare le fasi</div>
-<div style="background:white;border:0.5px solid var(--border);border-radius:6px;padding:16px;position:relative;margin-bottom:16px;">
-  <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center;">
+<div class="radar-panel">
+  <div class="radar-actions">
     <button onclick="tglR(0)" id="rb0" class="tbtn" style="background:var(--c1)">F1 on</button>
     <button onclick="tglR(1)" id="rb1" class="tbtn" style="background:var(--c2)">F2 on</button>
     <button onclick="tglR(2)" id="rb2" class="tbtn" style="background:var(--c3)">F3 on</button>
     <button onclick="tglR(3)" id="rb3" class="tbtn" style="background:var(--c4)">F4 on</button>
     <button onclick="tglR(4)" id="rb4" class="tbtn" style="background:var(--c5)">F5 on</button>
   </div>
-  <div style="position:relative;width:100%;height:400px;"><canvas id="radarAll"></canvas></div>
+  <div class="radar-chart"><canvas id="radarAll"></canvas></div>
 </div>
-<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;" class="radar-grid-5">
+<div class="radar-grid-5">
   <div class="ri-card"><div class="ri-hdr"><div class="ri-dot" style="background:var(--c1)"></div><span style="color:var(--c1-d)">Fase 1 · Inter territoriale</span></div><div class="ri-wrap"><canvas id="r1"></canvas></div></div>
   <div class="ri-card"><div class="ri-hdr"><div class="ri-dot" style="background:var(--c2)"></div><span style="color:var(--c2-d)">Fase 2 · Crisi di compattezza</span></div><div class="ri-wrap"><canvas id="r2"></canvas></div></div>
   <div class="ri-card"><div class="ri-hdr"><div class="ri-dot" style="background:var(--c3)"></div><span style="color:var(--c3-d)">Fase 3 · Ritorno aggressivo</span></div><div class="ri-wrap"><canvas id="r3"></canvas></div></div>
